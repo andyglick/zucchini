@@ -30,15 +30,15 @@ class TestContextTest {
 
     @Test
     void verifyThreadUniqueValues() {
-        LinkedList<TestThread> threads = new LinkedList<TestThread>();
+        LinkedList<TestThread> threads = new LinkedList<>();
 
         TestThread tmp;
 
         String[] expected = new String[]{"apples", "bananas", "carrots", "diapers", "elephants"};
 
-        for(int i = 0; i < expected.length; i++) {
+        for (String anExpected : expected) {
             tmp = new TestThread();
-            tmp.expected = expected[i];
+            tmp.expected = anExpected;
             threads.add(tmp);
         }
 
@@ -71,7 +71,7 @@ class TestContextTest {
 
             for (int i = 0; i < 10; i++) {
                 try {
-                    Thread.sleep((int) Math.random() * 50);
+                    Thread.sleep((int) (Math.random() * 50));
                 }
                 catch(Throwable e) {
                     LOGGER.error("Thread failed to sleep.");
@@ -81,7 +81,7 @@ class TestContextTest {
 
             TestContext.removeCurrent();
             try {
-                Thread.sleep((int) Math.random() * 50);
+                Thread.sleep((int) (Math.random() * 50));
             }
             catch(Throwable e) {
                 LOGGER.error("Thread failed to sleep.");

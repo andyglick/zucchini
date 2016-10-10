@@ -26,11 +26,14 @@ import java.io.InputStream;
 
 import com.google.gson.JsonArray;
 
+import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
+import net.masterthought.cucumber.Reportable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings({"WeakerAccess", "SynchronizeOnNonFinalField", "unused"})
 class ZucchiniShutdownHook extends Thread {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZucchiniShutdownHook.class);
@@ -55,9 +58,10 @@ class ZucchiniShutdownHook extends Thread {
     private List<String> zucchiniFailureCauses;
 
     private ZucchiniShutdownHook() {
-        zucchiniFailureCauses = new LinkedList<String>();
+        zucchiniFailureCauses = new LinkedList<>();
     }
 
+    @SuppressWarnings("UnusedAssignment")
     @Override
     public void run() {
         LOGGER.trace("Running ZucchiniShutdownHook");
@@ -85,7 +89,7 @@ class ZucchiniShutdownHook extends Thread {
                 else
                     html = new File("target/zucchini-reports");
 
-                List<String> pathList = new LinkedList<String>();
+                List<String> pathList = new LinkedList<>();
                 pathList.add(json.getAbsolutePath());
 
                 String version = this.getClass().getPackage().getImplementationVersion();
@@ -111,18 +115,34 @@ class ZucchiniShutdownHook extends Thread {
                 else
                     version = " - Zucchini (" + version + ")";
 
-                String rptName = "${" + NAME_ENV_VAR + "}";
+                String rptName;
 
                 if(System.getenv(NAME_ENV_VAR) != null)
                     rptName = System.getenv(NAME_ENV_VAR);
+                else
+                    rptName = System.getProperty("cucumber_report_name", "Cucumber Report");
 
 
-                ReportBuilder reportBuilder = new ReportBuilder(pathList, html, "", rptName + version, "Zucchini" + version, true, true, true, false, false, "", false);
+                File reportOutputDirectory = new File("target/cucumber-html-reports");
+                Configuration configuration = new Configuration(reportOutputDirectory, rptName);
+                configuration.setBuildNumber(version);
+                configuration.setParallelTesting(false);
+
+                ReportBuilder reportBuilder = new ReportBuilder(pathList, configuration);
+                Reportable report = reportBuilder.generateReports();
+
+                /* ReportBuilder reportBuilder = new ReportBuilder(pathList, html, "", rptName + version, "Zucchini" + version, true, true,
+                   true, false, false, false, false, false);
+
+                // ReportBuilder(List<String> jsonReports, File reportDirectory, String pluginUrlPath, String buildNumber, String buildProject,
+                // boolean skippedFails, boolean pendingFails, boolean undefinedFails, boolean missingFails, boolean flashCharts, boolean runWithJenkins,
+                // boolean highCharts, boolean parallelTesting) throws IOException, VelocityException {
+
                 reportBuilder.generateReports();
 
                 boolean buildResult = reportBuilder.getBuildStatus();
                 if(!buildResult)
-                    throw new Exception("BUILD FAILED - Check Report For Details");
+                    throw new Exception("BUILD FAILED - Check Report For Details");*/
             }
         }
         catch(Exception t) {
