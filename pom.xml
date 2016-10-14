@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+  http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.comcast.zucchini</groupId>
@@ -60,6 +62,8 @@
     <testng.version>6.9.13.6</testng.version>
 
     <!-- Plugin Versions -->
+    <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
+    <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
     <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
     <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
     <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
@@ -87,11 +91,11 @@
       <plugins>
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
-          <version>3.0.0</version>
+          <version>${maven.clean.plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.5.1</version>
+          <version>${maven.compiler.plugin.version}</version>
         </plugin>
         <plugin>
           <artifactId>maven-deploy-plugin</artifactId>
@@ -112,6 +116,35 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>${maven.plugin.license.version}</version>
+        <configuration>
+          <header>LICENSE_TEMPLATE.txt</header>
+          <properties>
+            <owner>Comcast Cable Communications Management, LLC</owner>
+          </properties>
+          <excludes>
+            <exclude>README.md</exclude>
+            <exclude>NOTICE.txt</exclude>
+            <exclude>LICENSE.txt</exclude>
+            <exclude>CONTRIBUTING.txt</exclude>
+            <exclude>.travis.yml</exclude>
+            <exclude>pom.xml</exclude>
+            <exclude>src/main/resources/version.properties</exclude>
+            <exclude>src/test/resources/**</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <version>2.10</version>
@@ -262,36 +295,35 @@
       </build>
     </profile>
     <profile>
-      <id>license-check</id>
+      <id>eclipse-compiler</id>
       <build>
         <plugins>
           <plugin>
-            <groupId>com.mycila</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <version>${maven.plugin.license.version}</version>
-            <configuration>
-              <header>LICENSE_TEMPLATE.txt</header>
-              <properties>
-                <owner>Comcast Cable Communications Management, LLC</owner>
-              </properties>
-              <excludes>
-                <exclude>README.md</exclude>
-                <exclude>NOTICE.txt</exclude>
-                <exclude>LICENSE.txt</exclude>
-                <exclude>CONTRIBUTING.txt</exclude>
-                <exclude>.travis.yml</exclude>
-                <exclude>pom.xml</exclude>
-                <exclude>src/test/resources/**</exclude>
-              </excludes>
-            </configuration>
+            <artifactId>maven-clean-plugin</artifactId>
+            <version>${maven.clean.plugin.version}</version>
             <executions>
               <execution>
+                <id>clean</id>
                 <phase>validate</phase>
                 <goals>
-                  <goal>check</goal>
+                  <goal>clean</goal>
                 </goals>
               </execution>
             </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>${maven.compiler.plugin.version}</version>
+            <configuration>
+              <compilerId>eclipse</compilerId>
+            </configuration>
+            <dependencies>
+              <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-compiler-eclipse</artifactId>
+                <version>2.8.1</version>
+              </dependency>
+            </dependencies>
           </plugin>
         </plugins>
       </build>
